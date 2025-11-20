@@ -495,7 +495,7 @@ def render_geography_tab(base_df: pd.DataFrame, chart_height: int):
     )
 
     if geo_src_df.empty:
-        st.info("No data for selected filters (Geographic Chart).")
+        st.info("No data for selected filters (Geographic Chart)")
     else:
         na_sales_val = geo_src_df["NA_Sales"].sum()
         eu_sales_val = geo_src_df["EU_Sales"].sum()
