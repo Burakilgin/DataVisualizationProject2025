@@ -82,7 +82,7 @@ streamlit run app.py
 
 ---
 
-## Functions of Charts
+## Highlights of Project
 
 - Every chart function created from the owner of chart part as like as Chart Creation structure. In the project, charts can be seem mixed because to make them more understandable we combined more than one chart like Glyph chart with Scatter Plot Graphs. 
 
@@ -90,3 +90,4 @@ streamlit run app.py
 
 - End section of the Streamlit app you can see the **Raw Data**. We did that can be filterable because when someone who wants to compare the graphics with the raw data, when the select the same filters from the filter section, will be able to see the raw data. 
 
+- Team members gave to Melisa Akyol their charts informations, these informations combined from Melisa Akyol.
