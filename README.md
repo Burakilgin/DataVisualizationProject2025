@@ -10,9 +10,10 @@ The app provides multiple coordinated views (Summary&Overview, Distributions, Ne
 
 ## 1. Presentation of Dataset
 
-This dataeset includes the video games sales in the world between 1980-2020. It has more than 20+ Publisher and Game Categories. 
+This dataeset includes the video games sales in the world between 1980-2020. It has more than 20+ Publisher and Game Categories. Dataset downloaded from Kaggle Datasets. 
+Dataset Link = https://www.kaggle.com/datasets/gregorut/videogamesales
 
-The data includes: 
+The dataset includes: 
 - 16.598 rows 
 - 578 Publisher
 - 12 Genre (Categories) 
