@@ -1,6 +1,7 @@
 
+# Introduction to Data Visualization Project
 
-# Video Game Sales Dashboard
+## Video Game Sales Dashboard
 
 Interactive Streamlit dashboard for exploring the **Video Game Sales** dataset (Dataset file is in the main folder as a "vgsales.csv").
 The app provides multiple coordinated views (Summary&Overview, Distributions, Networks, Geography, and Details) with reusable filters for genres, platforms, publishers, and sales regions.
