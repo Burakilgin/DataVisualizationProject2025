@@ -6,8 +6,7 @@ import networkx as nx
 
 from data_loader import CATEGORICAL_COLS, NUMERIC_COLS, REGION_COLS
 
-#Functions File
-#Deneme PR
+# Functions File
 
 def apply_chart_filters(
     base_df: pd.DataFrame,
@@ -20,7 +19,7 @@ def apply_chart_filters(
     any_selection = False
 
     with st.expander(label):
-        # Kategorik filtreler
+        # Categorical Filters
         for col in allowed_cols:
             if col in filtered.columns:
                 unique_vals = sorted(filtered[col].dropna().unique())
@@ -33,7 +32,7 @@ def apply_chart_filters(
                     any_selection = True
                     filtered = filtered[filtered[col].isin(selected_vals)]
 
-        # Bölge filtreleri
+        # Region Filters
         if allowed_regions:
             region_selected = st.multiselect(
                 label="Regions (NA/EU/JP/Other)",
@@ -53,16 +52,15 @@ def apply_chart_filters(
                 if mask is not None:
                     filtered = filtered[mask]
 
-    # Hiç seçim yoksa veri gösterme
+    # No selections
     if not any_selection:
         filtered = filtered.iloc[0:0]
 
     return filtered
 
 
-# ---------------------------
 # OVERVIEW TAB
-# ---------------------------
+
 
 def render_overview_tab(base_df: pd.DataFrame, chart_height: int):
     st.subheader("Summary & High-Level View")
@@ -82,10 +80,10 @@ def render_overview_tab(base_df: pd.DataFrame, chart_height: int):
         st.metric("Number of Games", n_games)
 
     with col2:
-        st.metric("Total Global Sales (M)", f"{total_global:.1f}")
+        st.metric("Total Global Sales", f"{total_global:.1f}")
 
     with col3:
-        st.metric("Avg Global Sales/Game (M)", f"{avg_global:.2f}")
+        st.metric("Avg Global Sales/Game", f"{avg_global:.2f}")
 
     with col4:
         if top_Genre:
@@ -93,7 +91,7 @@ def render_overview_tab(base_df: pd.DataFrame, chart_height: int):
         else:
             st.metric("Top Genre", "-")
 
-    st.markdown("### Glyph-Based Scatter (Year vs Global Sales)")
+    st.markdown("# Glyph-Based Scatter")
 
     glyph_df = apply_chart_filters(
         base_df,
@@ -104,7 +102,7 @@ def render_overview_tab(base_df: pd.DataFrame, chart_height: int):
     )
 
     if glyph_df.empty:
-        st.info("No data for selected filters (Glyph Scatter).")
+        st.info("No data for selected filters (Glyph Scatter Graph).")
     else:
         fig_glyph = px.scatter(
             glyph_df,
@@ -117,13 +115,15 @@ def render_overview_tab(base_df: pd.DataFrame, chart_height: int):
             opacity=0.7,
             title="Sales Distribution Over Years by Genre & Platform",
         )
-        fig_glyph.update_layout(height=chart_height)
+        fig_glyph.update_layout(
+            height=chart_height,
+            xaxis_title="Year",
+            yaxis_title="Global Sales",
+        )
         st.plotly_chart(fig_glyph, use_container_width=True)
 
 
-# ---------------------------
 # DISTRIBUTIONS TAB
-# ---------------------------
 
 def render_distributions_tab(
     base_df: pd.DataFrame,
@@ -149,7 +149,7 @@ def render_distributions_tab(
         )
 
         if hist_df.empty:
-            st.info("No data for selected filters (Histogram).")
+            st.info("No data for selected filters (Histogram Graph).")
         else:
             fig_hist = px.histogram(
                 hist_df,
@@ -159,7 +159,8 @@ def render_distributions_tab(
             )
             fig_hist.update_layout(
                 height=chart_height,
-                xaxis_title=f"{selected_sales_col} (M)",
+                xaxis_title=f"{selected_sales_col}",
+                yaxis_title="Number of Games",
             )
             st.plotly_chart(fig_hist, use_container_width=True)
 
@@ -176,7 +177,7 @@ def render_distributions_tab(
         )
 
         if corr_df.empty:
-            st.info("No data for selected filters (Correlation Heatmap).")
+            st.info("No data for selected filters (Correlation Heatmap Graph).")
         else:
             corr = corr_df[NUMERIC_COLS].corr()
             fig_corr = px.imshow(
@@ -187,7 +188,11 @@ def render_distributions_tab(
                 zmin=-1,
                 zmax=1,
             )
-            fig_corr.update_layout(height=chart_height)
+            fig_corr.update_layout(
+                height=chart_height,
+                xaxis_title="Sales Metrics",
+                yaxis_title="Sales Metrics",
+            )
             st.plotly_chart(fig_corr, use_container_width=True)
 
     st.markdown("---")
@@ -208,7 +213,7 @@ def render_distributions_tab(
         )
 
         if violin_df.empty:
-            st.info("No data for selected filters (Violin Plot).")
+            st.info("No data for selected filters (Violin Plot Graph).")
         else:
             fig_violin = px.violin(
                 violin_df,
@@ -237,7 +242,7 @@ def render_distributions_tab(
         )
 
         if treemap_bar_df.empty:
-            st.info("No data for selected filters (Treemap & Bar).")
+            st.info("No data for selected filters (Treemap & Bar Graph).")
         else:
             # Treemap
             treemap_df = (
@@ -279,6 +284,8 @@ def render_distributions_tab(
             fig_bar.update_layout(
                 height=int(chart_height * 0.9),
                 xaxis_tickangle=45,
+                xaxis_title="Genre",
+                yaxis_title="Total Global Sales",
             )
             st.plotly_chart(fig_bar, use_container_width=True)
 
@@ -296,7 +303,7 @@ def render_distributions_tab(
     )
 
     if parallel_df.empty:
-        st.info("No data for selected filters (Parallel Coordinates).")
+        st.info("No data for selected filters (Parallel Coordinates Graph).")
     else:
         max_rows_for_parallel = 300
         if len(parallel_df) > max_rows_for_parallel:
@@ -306,13 +313,14 @@ def render_distributions_tab(
             parallel_df,
             dimensions=NUMERIC_COLS,
         )
-        fig_parallel.update_layout(height=chart_height)
+        fig_parallel.update_layout(
+            height=chart_height,
+        )
         st.plotly_chart(fig_parallel, use_container_width=True)
 
 
-# ---------------------------
 # NETWORKS TAB
-# ---------------------------
+
 
 def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
     st.subheader("Network Views & Flows")
@@ -329,7 +337,7 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
     )
 
     if corr_net_df.empty:
-        st.info("No data for selected filters (Correlation Network).")
+        st.info("No data for selected filters (Correlation Network Graph).")
     else:
         corr_net = corr_net_df[NUMERIC_COLS].corr()
 
@@ -348,11 +356,15 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
                 G.add_edge(col1, col2, weight=weight)
 
             pos = nx.spring_layout(G, seed=42)
+
             nx_fig = px.scatter(
                 x=[pos[node][0] for node in G.nodes()],
                 y=[pos[node][1] for node in G.nodes()],
                 text=list(G.nodes()),
-                labels={"x": "", "y": ""},
+                labels={
+                    "x": "Node position X",
+                    "y": "Node position Y",
+                },
             )
 
             for edge in G.edges():
@@ -365,15 +377,19 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
                     line=dict(width=2),
                 )
 
-            nx_fig.update_layout(height=chart_height)
+            nx_fig.update_layout(
+                height=chart_height,
+                xaxis_title="Node position X",
+                yaxis_title="Node position Y",
+            )
             st.plotly_chart(nx_fig, use_container_width=True)
         else:
-            st.info("No strong correlations (>|0.5|) for selected filters.")
+            st.info("No strong correlations for selected filters.")
 
     st.markdown("---")
 
     # Genre–Platform Network
-    st.markdown("#### Genre–Platform Network Graph")
+    st.markdown("### Genre–Platform Network Graph")
 
     gp_net_df = apply_chart_filters(
         base_df,
@@ -384,7 +400,7 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
     )
 
     if gp_net_df.empty:
-        st.info("No data for selected filters (Genre–Platform Network).")
+        st.info("No data for selected filters (Genre–Platform Network Graph).")
     else:
         network_df = (
             gp_net_df.groupby(["Genre", "Platform"])["Global_Sales"]
@@ -422,13 +438,15 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
                 line=dict(width=1),
             )
 
-        nx_fig2.update_layout(height=chart_height)
+        nx_fig2.update_layout(
+            height=chart_height,
+        )
         st.plotly_chart(nx_fig2, use_container_width=True)
 
     st.markdown("---")
 
     # Sankey
-    st.markdown("#### Sankey Diagram – Genre → Regional Sales")
+    st.markdown("### Sankey Diagram – Genre → Regional Sales")
 
     sankey_src_df = apply_chart_filters(
         base_df,
@@ -438,12 +456,22 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
         label="Filters – Sankey Diagram",
     )
 
-    if sankey_src_df.empty:
-        st.info("No data for selected filters (Sankey Diagram).")
-    else:
-        sankey_df = sankey_src_df.groupby("Genre")[NUMERIC_COLS].sum().reset_index()
+    selected_regions = st.session_state.get("sankey_regions", [])
 
-        nodes = list(sankey_df["Genre"]) + NUMERIC_COLS
+    if sankey_src_df.empty:
+        st.info("No data for selected filters (Sankey Diagram Graph).")
+    else:
+        base_region_cols = selected_regions or []
+        sankey_numeric_cols = ["Global_Sales"] + base_region_cols
+
+        sankey_df = (
+            sankey_src_df
+            .groupby("Genre")[sankey_numeric_cols]
+            .sum()
+            .reset_index()
+        )
+
+        nodes = list(sankey_df["Genre"]) + sankey_numeric_cols
         node_indices = {name: i for i, name in enumerate(nodes)}
 
         source = []
@@ -452,37 +480,39 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
 
         for _, row in sankey_df.iterrows():
             cat = row["Genre"]
-            for sales_col in NUMERIC_COLS:
+            for sales_col in sankey_numeric_cols:
                 source.append(node_indices[cat])
                 target.append(node_indices[sales_col])
                 value.append(row[sales_col])
 
-        fig_sankey = go.Figure(data=[go.Sankey(
-            node=dict(
-                pad=15,
-                thickness=20,
-                line=dict(color="black", width=0.5),
-                label=nodes,
-                color="blue",
-            ),
-            link=dict(
-                source=source,
-                target=target,
-                value=value,
-            ),
-        )])
+        fig_sankey = go.Figure(
+            data=[
+                go.Sankey(
+                    node=dict(
+                        pad=15,
+                        thickness=20,
+                        line=dict(color="green", width=1),
+                        label=nodes,
+                        color="blue",
+                    ),
+                    link=dict(
+                        source=source,
+                        target=target,
+                        value=value,
+                    ),
+                )
+            ]
+        )
 
         fig_sankey.update_layout(
             title_text="Genre to Regional Sales Flow",
-            font_size=10,
+            font_size=20,
             height=chart_height,
         )
         st.plotly_chart(fig_sankey, use_container_width=True)
 
 
-# ---------------------------
 # GEOGRAPHY TAB
-# ---------------------------
 
 def render_geography_tab(base_df: pd.DataFrame, chart_height: int):
     st.subheader("Geographical View")
@@ -496,7 +526,7 @@ def render_geography_tab(base_df: pd.DataFrame, chart_height: int):
     )
 
     if geo_src_df.empty:
-        st.info("No data for selected filters (Geographic Chart)")
+        st.info("No data for selected filters (Geographic Chart Graph)")
     else:
         na_sales_val = geo_src_df["NA_Sales"].sum()
         eu_sales_val = geo_src_df["EU_Sales"].sum()
@@ -545,9 +575,7 @@ def render_geography_tab(base_df: pd.DataFrame, chart_height: int):
         st.plotly_chart(fig_geo, use_container_width=True)
 
 
-# ---------------------------
 # DETAILS TAB
-# ---------------------------
 
 def render_details_tab(base_df: pd.DataFrame):
     st.subheader("Detailed Data View")
@@ -561,7 +589,7 @@ def render_details_tab(base_df: pd.DataFrame):
     )
 
     if table_df.empty:
-        st.info("No data for selected filters (Table).")
+        st.info("No data for selected filters.")
     else:
         st.dataframe(
             table_df,

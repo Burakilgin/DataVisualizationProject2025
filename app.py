@@ -1,4 +1,3 @@
-# app.py
 import streamlit as st
 from data_loader import load_data, CATEGORICAL_COLS, NUMERIC_COLS, REGION_COLS
 import charts
@@ -13,9 +12,9 @@ st.set_page_config(
 df = load_data()
 
 st.title("Video Game Sales Dashboard")
-st.markdown("---")
 
-# Üst kısım kontroller (Year / Sales / Violin / Height)
+st.markdown("-------")
+
 col_year, col_sales, col_violin, col_height = st.columns([2, 1, 1, 1])
 
 with col_year:
@@ -64,7 +63,6 @@ if base_df.empty:
     st.error("There is no result for selected year range. Please change filters.")
     st.stop()
 
-# Tab'ler
 tab_overview, tab_dist, tab_networks, tab_geo, tab_details = st.tabs(
     ["Overview", "Distributions", "Networks", "Geography", "Details"]
 )
