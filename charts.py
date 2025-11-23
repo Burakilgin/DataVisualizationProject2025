@@ -91,7 +91,7 @@ def render_overview_tab(base_df: pd.DataFrame, chart_height: int):
         else:
             st.metric("Top Genre", "-")
 
-    st.markdown("# Glyph-Based Scatter")
+    st.markdown("# Glyph-Based Scatter Plot")
 
     glyph_df = apply_chart_filters(
         base_df,
@@ -156,11 +156,19 @@ def render_distributions_tab(
                 x=selected_sales_col,
                 nbins=30,
                 marginal="box",
+                title=f"Distribution of {selected_sales_col} (Histogram)",
+                opacity=0.7,    # Hafif şeffaflık
+                color_discrete_sequence=['#3366CC'] # Şık bir mavi ton
             )
+
+            # Barların arasına ince çizgi
+            fig_hist.update_traces(marker_line_width=1, marker_line_color="white")
+
             fig_hist.update_layout(
                 height=chart_height,
                 xaxis_title=f"{selected_sales_col}",
-                yaxis_title="Number of Games",
+                yaxis_title="Frequency (Count)",
+                bargap=0.2 # Sütunlar arasına hafif boşluk
             )
             st.plotly_chart(fig_hist, use_container_width=True)
 
