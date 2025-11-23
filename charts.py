@@ -388,63 +388,6 @@ def render_networks_tab(base_df: pd.DataFrame, chart_height: int):
 
     st.markdown("---")
 
-    # Genre–Platform Network
-    st.markdown("### Genre–Platform Network Graph")
-
-    gp_net_df = apply_chart_filters(
-        base_df,
-        prefix="Genre_platform_net",
-        allowed_cols=["Genre", "Platform"],
-        allowed_regions=REGION_COLS,
-        label="Filters – Genre–Platform Network",
-    )
-
-    if gp_net_df.empty:
-        st.info("No data for selected filters (Genre–Platform Network Graph).")
-    else:
-        network_df = (
-            gp_net_df.groupby(["Genre", "Platform"])["Global_Sales"]
-            .sum()
-            .reset_index()
-        )
-
-        G2 = nx.Graph()
-
-        for _, row in network_df.iterrows():
-            cat = row["Genre"]
-            platform = row["Platform"]
-            weight = row["Global_Sales"]
-
-            G2.add_node(cat, type="Genre")
-            G2.add_node(platform, type="Platform")
-            G2.add_edge(cat, platform, weight=weight)
-
-        pos2 = nx.spring_layout(G2, seed=42, k=1.5)
-
-        nx_fig2 = px.scatter(
-            x=[pos2[node][0] for node in G2.nodes()],
-            y=[pos2[node][1] for node in G2.nodes()],
-            text=list(G2.nodes()),
-            labels={"x": "", "y": ""},
-        )
-
-        for edge in G2.edges():
-            x0, y0 = pos2[edge[0]]
-            x1, y1 = pos2[edge[1]]
-            nx_fig2.add_shape(
-                type="line",
-                x0=x0, y0=y0,
-                x1=x1, y1=y1,
-                line=dict(width=1),
-            )
-
-        nx_fig2.update_layout(
-            height=chart_height,
-        )
-        st.plotly_chart(nx_fig2, use_container_width=True)
-
-    st.markdown("---")
-
     # Sankey
     st.markdown("### Sankey Diagram – Genre → Regional Sales")
 
