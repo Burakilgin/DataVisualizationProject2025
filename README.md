@@ -64,7 +64,7 @@ streamlit run app.py
 
 ## 3. Chart Creation Structure
 1. Melisa Akyol
-    - Barchart Graph
+    - Histogram Graph
     - Geopgraphic Graph
     - Glyph Based Graph
 
